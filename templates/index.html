@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CFST Load Prediction</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+        }
+
+        .container {
+            font-family: "Times New Roman";
+            position: absolute;
+
+            left: 31.5%;     /* 👈 move LEFT (reduce % more to move further left) */
+            top: 50%;      /* 👈 move DOWN */
+
+            transform: translate(-50%, -50%);
+
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            width: 550px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 28px;   /* increase as needed */
+            font-weight: bold;
+            color: indigo;
+        }
+
+        .form-row {
+            display: grid;
+            font-size: 20px;
+            grid-template-columns: 280px 20px 160px 60px;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        input, select {
+            width: 150px;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            margin: 30px auto;
+            font-size: 20px;
+            padding: 10px;
+            background: #007BFF;
+            border-radius: 20px;
+            color: white;
+            border: none;
+        }
+        body {
+
+            margin: 0;                  /* 🔥 VERY IMPORTANT */
+            padding: 0;
+            min-height: 95vh;
+            image-rendering: auto;
+            background-image: url('/static/first.png');
+            background-size: auto;     /* fills screen */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body>
+<div style="display:flex; gap:20px; justify-content:center; margin-top:30px;">
+
+
+</div>
+
+<div class="container">
+    <h2>IMPUT PARAMETERS FOR THE CFST COLUMN</h2>
+
+    <div class="form-row"><label>Bottom Diameter of the Column</label><span>:</span><input id="Diameter"><span>mm</span></div>
+    <div class="form-row"><label>Height of the Column</label><span>:</span><input id="Height"><span>mm</span></div>
+    <div class="form-row"><label>Thickness of Steel tube</label><span>:</span><input id="Thickness"><span>mm</span></div>
+    <div class="form-row"><label>Steel Fibre Volume Fraction</label><span>:</span><input id="Fibre"><span>%</span></div>
+    <div class="form-row"><label>Taper Angle</label><span>:</span><input id="Taper"><span>deg</span></div>
+
+    <div class="form-row">
+        <label>Grade of Concrete</label><span>:</span>
+        <select id="Concrete">
+            <option value="" disabled selected>Choose Grade</option>
+            <option value="30">M30</option>
+        </select>
+        <span></span>
+    </div>
+
+    <button onclick="predict()">Predict</button>
+</div>
+
+<script>
+function predict() {
+
+    const inputs = {
+        Diameter: document.getElementById("Diameter").value,
+        Height: document.getElementById("Height").value,
+        Thickness: document.getElementById("Thickness").value,
+        Fibre: document.getElementById("Fibre").value,
+        Taper: document.getElementById("Taper").value,
+        Concrete: document.getElementById("Concrete").value
+    };
+
+    localStorage.setItem("inputs", JSON.stringify(inputs));
+
+    fetch("/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(inputs)
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        console.log("Prediction:", data);
+
+        localStorage.setItem("prediction", JSON.stringify(data));
+
+        window.location.href = "/result";
+    })
+    .catch(err => {
+        alert("Error: " + err);
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: "Times New Roman";
+            min-height: 100vh;
+            image-rendering: auto;
+            image-resolution: from-image;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* MAIN SPLIT LAYOUT */
+        .layout {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 80px 100px;
+        }
+
+        /* LEFT SIDE (INPUTS - PINK AREA) */
+        .left-box {
+            position: absolute;
+            left: 13%;     /* 👈 move LEFT (reduce % more to move further left) */
+            top: 20%;
+            width: 40%;
+            padding: 20px;
+            display: grid;
+            font-size: 22px;
+            grid-template-columns: 350px 20px 200px 60px;
+            margin: 20px 0;
+            align-items: center;
+            border-radius: 10px;
+            background: none;
+        }
+
+        /* RIGHT SIDE (RESULTS - GREY AREA) */
+        .right-box {
+            position: absolute;
+            left: 50%;     /* 👈 move LEFT (reduce % more to move further left) */
+            top: 12%;
+            width: 40%;
+            padding: 20px;
+            font-size: 22px;
+            border-radius: 10px;
+            background: none;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 8px;
+        }
+
+        td:last-child {
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        button {
+            position: absolute;
+            left: 22%;     /* 👈 move LEFT (reduce % more to move further left) */
+            top: 80%;
+            display: block;
+            margin: 40px auto;
+            padding: 10px 20px;
+            background: #007BFF;
+            font-size: 24px;
+            color: white;
+            border-radius: 10px;
+            border: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="result"></div>
+
+<button onclick="goBack()">Back</button>
+
+<script>
+const data = JSON.parse(localStorage.getItem("prediction"));
+const inputs = JSON.parse(localStorage.getItem("inputs"));
+
+if (!data || !inputs) {
+    document.getElementById("result").innerHTML = "Error: No data found";
+} else {
+
+    const taper = parseFloat(inputs.Taper);
+
+    // 🔥 SET BACKGROUND IMAGE
+    if (taper > 0) {
+        document.body.style.backgroundImage = "url('/static/tapered.png')";
+    } else {
+        document.body.style.backgroundImage = "url('/static/straight.png')";
+    }
+
+    // 🔥 SPLIT LAYOUT CONTENT
+    document.getElementById("result").innerHTML = `
+    <div class="layout">
+
+        <!-- LEFT SIDE -->
+        <div class="left-box">
+            <table>
+                <tr><td>Bottom Diameter of the Column (D)</td><td>:</td><td>${inputs.Diameter} mm</td></tr>
+                <tr><td>Height of the Column (H)</td><td>:</td><td>${inputs.Height} mm</td></tr>
+                <tr><td>Thickness of Steel tube (t)</td><td>:</td><td>${inputs.Thickness} mm</td></tr>
+                <tr><td>Steel Fibre Volume Fraction</td><td>:</td><td>${inputs.Fibre} %</td></tr>
+                <tr><td>Taper  Angle (θ)</td><td>:</td><td>${inputs.Taper} °</td></tr>
+                <tr><td>Grade of Concrete</td><td>:</td><td>M${inputs.Concrete}</td></tr>
+            </table>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right-box">
+            <table>
+                <tr><td>Load Capacity of the Column under Axial Loading</td><td>:</td><td>${Number(data["Axial Load"]).toFixed(3)} kN</td></tr>
+                <tr><td>Load Capacity of the Column under Lateral Constant Amplitude Cyclic Loading</td><td>:</td><td>${Number(data["Lateral Constant"]).toFixed(3)} kN</td></tr>
+                <tr><td>Load Capacity of the Column under Lateral Variable Amplitude Cyclic Loading</td><td>:</td><td>${Number(data["Lateral Variable"]).toFixed(3)} kN</td></tr>
+            </table>
+        </div>
+
+    </div>
+    `;
+}
+
+function goBack() {
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
